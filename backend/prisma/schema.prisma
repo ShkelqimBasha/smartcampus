@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  password    String
+  firstName   String
+  lastName    String
+  role        String   @default("STUDENT") // STUDENT, PROFESSOR, ADMIN
+  faculty     String?
+  group       String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  announcements       Announcement[]
+  assignments         Assignment[]
+  submissions         Submission[]
+  bookings            Booking[]
+  readStatuses        AnnouncementRead[]
+  professorSchedules  Schedule[]  @relation("ProfessorSchedules")
+}
+
+model Announcement {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  target      String   @default("ALL") // ALL, FACULTY, GROUP
+  faculty     String?
+  group       String?
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  readStatuses AnnouncementRead[]
+}
+
+model AnnouncementRead {
+  id              String   @id @default(cuid())
+  userId          String
+  announcementId  String
+  readAt          DateTime @default(now())
+  user            User     @relation(fields: [userId], references: [id])
+  announcement    Announcement @relation(fields: [announcementId], references: [id])
+  @@unique([userId, announcementId])
+}
+
+model Schedule {
+  id          String   @id @default(cuid())
+  subject     String
+  professorId String
+  professor   User     @relation("ProfessorSchedules", fields: [professorId], references: [id])
+  faculty     String
+  group       String
+  dayOfWeek   Int
+  startTime   String
+  endTime     String
+  room        String
+  createdAt   DateTime @default(now())
+}
+
+model Assignment {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  deadline    DateTime
+  professorId String
+  professor   User     @relation(fields: [professorId], references: [id])
+  faculty     String
+  group       String
+  createdAt   DateTime @default(now())
+  submissions  Submission[]
+}
+
+model Submission {
+  id            String   @id @default(cuid())
+  assignmentId  String
+  studentId     String
+  fileUrl       String?
+  content       String?
+  status        String   @default("SUBMITTED") // SUBMITTED, LATE, MISSING, GRADED
+  grade         Float?
+  feedback      String?
+  submittedAt   DateTime @default(now())
+  assignment    Assignment @relation(fields: [assignmentId], references: [id])
+  student       User       @relation(fields: [studentId], references: [id])
+  @@unique([assignmentId, studentId])
+}
+
+model Room {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  capacity    Int
+  building    String
+  equipment   String?
+  isActive    Boolean  @default(true)
+  bookings    Booking[]
+}
+
+model Booking {
+  id          String   @id @default(cuid())
+  roomId      String
+  userId      String
+  date        DateTime
+  startTime   String
+  endTime     String
+  purpose     String
+  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  createdAt   DateTime @default(now())
+  room        Room     @relation(fields: [roomId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+}

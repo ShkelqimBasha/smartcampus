@@ -1,0 +1,16 @@
+{
+  "name": "smartcampus-root",
+  "version": "1.0.0",
+  "description": "SMARTCAMPUS - Platformë e Integruar për Shërbimet Universitare",
+  "scripts": {
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "seed": "npm --prefix backend run seed",
+    "test": "npm --prefix backend test",
+    "build": "npm --prefix frontend run build"
+  },
+  "keywords": ["smartcampus", "university", "management", "fullstack", "react", "express", "prisma"],
+  "author": "SmartCampus Team",
+  "license": "ISC"
+}
+

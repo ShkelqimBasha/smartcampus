@@ -4,248 +4,192 @@ const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Duke filluar mbushjen e pasur të bazës së të dhënave (Seed)...');
+  console.log('🌱 Duke filluar mbushjen e sigurt dhe të pasur të bazës së të dhënave (Idempotent Seed)...');
 
-  // 1. Pastrimi i të dhënave ekzistuese në rendin e duhur
-  await prisma.announcementRead.deleteMany({});
-  await prisma.submission.deleteMany({});
-  await prisma.assignment.deleteMany({});
-  await prisma.schedule.deleteMany({});
-  await prisma.booking.deleteMany({});
-  await prisma.room.deleteMany({});
-  await prisma.announcement.deleteMany({});
-  await prisma.user.deleteMany({});
+  // 1. Pastrimi i sigurt i të dhënave ekzistuese në rendin e duhur të varësive
+  try {
+    await prisma.announcementRead.deleteMany({});
+    await prisma.submission.deleteMany({});
+    await prisma.assignment.deleteMany({});
+    await prisma.schedule.deleteMany({});
+    await prisma.booking.deleteMany({});
+    await prisma.room.deleteMany({});
+    await prisma.announcement.deleteMany({});
+    await prisma.user.deleteMany({});
+    console.log('🧹 Pastrimi i tabelave të vjetra u krye me sukses.');
+  } catch (cleanupErr) {
+    console.warn('⚠️ Njoftim gjatë pastrimit fillestar (vazhdojmë me upsert):', cleanupErr.message);
+  }
 
   const passwordHash = await bcrypt.hash('demo123', 10);
 
+  // Helper funksion për krijim ose përditësim të sigurt (Idempotent Upsert)
+  async function upsertUser(userData) {
+    return await prisma.user.upsert({
+      where: { email: userData.email },
+      update: userData,
+      create: userData
+    });
+  }
+
   // 2. Krijimi i 12 Përdoruesve (1 Admin, 3 Pedagogë, 8 Studentë)
-  console.log('👤 Duke krijuar 12 përdoruesit...');
+  console.log('👤 Duke krijuar 12 përdoruesit me upsert...');
 
-  const admin = await prisma.user.create({
-    data: {
-      email: 'admin@smartcampus.al',
-      password: passwordHash,
-      firstName: 'Admin',
-      lastName: 'SmartCampus',
-      role: 'ADMIN',
-      isActive: true
-    }
+  const admin = await upsertUser({
+    email: 'admin@smartcampus.al',
+    password: passwordHash,
+    firstName: 'Admin',
+    lastName: 'SmartCampus',
+    role: 'ADMIN',
+    isActive: true
   });
 
-  const prof1 = await prisma.user.create({
-    data: {
-      email: 'pedagog@smartcampus.al',
-      password: passwordHash,
-      firstName: 'Adrian',
-      lastName: 'Maho',
-      role: 'PROFESSOR',
-      faculty: 'Fakulteti i Teknologjisë së Informacionit',
-      group: 'FTI-1',
-      isActive: true
-    }
+  const prof1 = await upsertUser({
+    email: 'pedagog@smartcampus.al',
+    password: passwordHash,
+    firstName: 'Adrian',
+    lastName: 'Maho',
+    role: 'PROFESSOR',
+    faculty: 'Fakulteti i Teknologjisë së Informacionit',
+    group: 'FTI-1',
+    isActive: true
   });
 
-  const prof2 = await prisma.user.create({
-    data: {
-      email: 'pedagog2@smartcampus.al',
-      password: passwordHash,
-      firstName: 'Elena',
-      lastName: 'Prifti',
-      role: 'PROFESSOR',
-      faculty: 'Fakulteti Ekonomik',
-      group: 'BIZ-1',
-      isActive: true
-    }
+  const prof2 = await upsertUser({
+    email: 'pedagog2@smartcampus.al',
+    password: passwordHash,
+    firstName: 'Elena',
+    lastName: 'Prifti',
+    role: 'PROFESSOR',
+    faculty: 'Fakulteti Ekonomik',
+    group: 'BIZ-1',
+    isActive: true
   });
 
-  const prof3 = await prisma.user.create({
-    data: {
-      email: 'pedagog3@smartcampus.al',
-      password: passwordHash,
-      firstName: 'Arben',
-      lastName: 'Hoxha',
-      role: 'PROFESSOR',
-      faculty: 'Fakulteti i Teknologjisë së Informacionit',
-      group: 'FTI-2',
-      isActive: true
-    }
+  const prof3 = await upsertUser({
+    email: 'pedagog3@smartcampus.al',
+    password: passwordHash,
+    firstName: 'Arben',
+    lastName: 'Hoxha',
+    role: 'PROFESSOR',
+    faculty: 'Fakulteti i Teknologjisë së Informacionit',
+    group: 'FTI-2',
+    isActive: true
   });
 
-  const student1 = await prisma.user.create({
-    data: {
-      email: 'student@smartcampus.al',
-      password: passwordHash,
-      firstName: 'Shkëlqim',
-      lastName: 'Basha',
-      role: 'STUDENT',
-      faculty: 'Fakulteti i Teknologjisë së Informacionit',
-      group: 'FTI-1',
-      isActive: true
-    }
+  const student1 = await upsertUser({
+    email: 'student@smartcampus.al',
+    password: passwordHash,
+    firstName: 'Shkëlqim',
+    lastName: 'Basha',
+    role: 'STUDENT',
+    faculty: 'Fakulteti i Teknologjisë së Informacionit',
+    group: 'FTI-1',
+    isActive: true
   });
 
-  const student2 = await prisma.user.create({
-    data: {
-      email: 'student2@smartcampus.al',
-      password: passwordHash,
-      firstName: 'Sara',
-      lastName: 'Hoxha',
-      role: 'STUDENT',
-      faculty: 'Fakulteti i Teknologjisë së Informacionit',
-      group: 'FTI-1',
-      isActive: true
-    }
+  const student2 = await upsertUser({
+    email: 'student2@smartcampus.al',
+    password: passwordHash,
+    firstName: 'Sara',
+    lastName: 'Hoxha',
+    role: 'STUDENT',
+    faculty: 'Fakulteti i Teknologjisë së Informacionit',
+    group: 'FTI-1',
+    isActive: true
   });
 
-  const student3 = await prisma.user.create({
-    data: {
-      email: 'student3@smartcampus.al',
-      password: passwordHash,
-      firstName: 'Erion',
-      lastName: 'Malaj',
-      role: 'STUDENT',
-      faculty: 'Fakulteti i Teknologjisë së Informacionit',
-      group: 'FTI-2',
-      isActive: true
-    }
+  const student3 = await upsertUser({
+    email: 'student3@smartcampus.al',
+    password: passwordHash,
+    firstName: 'Erion',
+    lastName: 'Malaj',
+    role: 'STUDENT',
+    faculty: 'Fakulteti i Teknologjisë së Informacionit',
+    group: 'FTI-2',
+    isActive: true
   });
 
-  const student4 = await prisma.user.create({
-    data: {
-      email: 'student4@smartcampus.al',
-      password: passwordHash,
-      firstName: 'Anisa',
-      lastName: 'Dervishi',
-      role: 'STUDENT',
-      faculty: 'Fakulteti i Teknologjisë së Informacionit',
-      group: 'FTI-2',
-      isActive: true
-    }
+  const student4 = await upsertUser({
+    email: 'student4@smartcampus.al',
+    password: passwordHash,
+    firstName: 'Anisa',
+    lastName: 'Dervishi',
+    role: 'STUDENT',
+    faculty: 'Fakulteti i Teknologjisë së Informacionit',
+    group: 'FTI-2',
+    isActive: true
   });
 
-  const student5 = await prisma.user.create({
-    data: {
-      email: 'student5@smartcampus.al',
-      password: passwordHash,
-      firstName: 'Klodian',
-      lastName: 'Rama',
-      role: 'STUDENT',
-      faculty: 'Fakulteti Ekonomik',
-      group: 'BIZ-1',
-      isActive: true
-    }
+  const student5 = await upsertUser({
+    email: 'student5@smartcampus.al',
+    password: passwordHash,
+    firstName: 'Klodian',
+    lastName: 'Rama',
+    role: 'STUDENT',
+    faculty: 'Fakulteti Ekonomik',
+    group: 'BIZ-1',
+    isActive: true
   });
 
-  const student6 = await prisma.user.create({
-    data: {
-      email: 'student6@smartcampus.al',
-      password: passwordHash,
-      firstName: 'Keisi',
-      lastName: 'Zeka',
-      role: 'STUDENT',
-      faculty: 'Fakulteti Ekonomik',
-      group: 'BIZ-1',
-      isActive: true
-    }
+  const student6 = await upsertUser({
+    email: 'student6@smartcampus.al',
+    password: passwordHash,
+    firstName: 'Keisi',
+    lastName: 'Zeka',
+    role: 'STUDENT',
+    faculty: 'Fakulteti Ekonomik',
+    group: 'BIZ-1',
+    isActive: true
   });
 
-  const student7 = await prisma.user.create({
-    data: {
-      email: 'student7@smartcampus.al',
-      password: passwordHash,
-      firstName: 'Denisa',
-      lastName: 'Kuqi',
-      role: 'STUDENT',
-      faculty: 'Fakulteti i Teknologjisë së Informacionit',
-      group: 'FTI-1',
-      isActive: true
-    }
+  const student7 = await upsertUser({
+    email: 'student7@smartcampus.al',
+    password: passwordHash,
+    firstName: 'Denisa',
+    lastName: 'Kuqi',
+    role: 'STUDENT',
+    faculty: 'Fakulteti i Teknologjisë së Informacionit',
+    group: 'FTI-1',
+    isActive: true
   });
 
-  const student8 = await prisma.user.create({
-    data: {
-      email: 'student8@smartcampus.al',
-      password: passwordHash,
-      firstName: 'Besnik',
-      lastName: 'Berisha',
-      role: 'STUDENT',
-      faculty: 'Fakulteti Ekonomik',
-      group: 'BIZ-1',
-      isActive: true
-    }
+  const student8 = await upsertUser({
+    email: 'student8@smartcampus.al',
+    password: passwordHash,
+    firstName: 'Besnik',
+    lastName: 'Berisha',
+    role: 'STUDENT',
+    faculty: 'Fakulteti Ekonomik',
+    group: 'BIZ-1',
+    isActive: true
   });
 
-  console.log('✅ U krijuan 12 përdorues (fjalëkalimi për të gjithë: demo123).');
+  console.log('✅ U krijuan/përditësuan 12 përdorues (fjalëkalimi për të gjithë: demo123).');
 
-  // 3. Krijimi i 8 Sallave Universitare
-  console.log('🏢 Duke krijuar 8 sallat...');
-  const rooms = await Promise.all([
-    prisma.room.create({
-      data: {
-        name: 'A101',
-        capacity: 35,
-        building: 'Ndërtesa A',
-        equipment: 'Projektor, Tabelë e Bardhë, Wi-Fi'
-      }
-    }),
-    prisma.room.create({
-      data: {
-        name: 'A102',
-        capacity: 25,
-        building: 'Ndërtesa A',
-        equipment: 'Projektor, Sound System, Klimë'
-      }
-    }),
-    prisma.room.create({
-      data: {
-        name: 'A103',
-        capacity: 40,
-        building: 'Ndërtesa A',
-        equipment: 'Projektor, Tabelë e Zezë, Klimë'
-      }
-    }),
-    prisma.room.create({
-      data: {
-        name: 'B201',
-        capacity: 60,
-        building: 'Ndërtesa B',
-        equipment: 'Smart Board, Projektor, Mikrofon Wireless'
-      }
-    }),
-    prisma.room.create({
-      data: {
-        name: 'B202',
-        capacity: 50,
-        building: 'Ndërtesa B',
-        equipment: 'Smart Board, Projektor, Sound System'
-      }
-    }),
-    prisma.room.create({
-      data: {
-        name: 'C301',
-        capacity: 80,
-        building: 'Amfiteatri Qendror',
-        equipment: 'Projektor Dual, Sound System, 2x Mikrofon, Klimë'
-      }
-    }),
-    prisma.room.create({
-      data: {
-        name: 'LAB1',
-        capacity: 25,
-        building: 'Ndërtesa C - Laboratorë',
-        equipment: '25 PC Workstation, Projektor, Switch LAN Gigabit'
-      }
-    }),
-    prisma.room.create({
-      data: {
-        name: 'LAB2',
-        capacity: 30,
-        building: 'Ndërtesa C - Laboratorë',
-        equipment: '30 PC iMac, Smart Board, Set Pajisjesh Robotike'
-      }
-    })
-  ]);
-  console.log('✅ U shtuan 8 salla dhe amfiteatro.');
+  // 3. Krijimi i 8 Sallave Universitare me upsert
+  console.log('🏢 Duke krijuar 8 sallat me upsert...');
+  const roomsData = [
+    { name: 'A101', capacity: 35, building: 'Ndërtesa A', equipment: 'Projektor, Tabelë e Bardhë, Wi-Fi' },
+    { name: 'A102', capacity: 25, building: 'Ndërtesa A', equipment: 'Projektor, Sound System, Klimë' },
+    { name: 'A103', capacity: 40, building: 'Ndërtesa A', equipment: 'Projektor, Tabelë e Zezë, Klimë' },
+    { name: 'B201', capacity: 60, building: 'Ndërtesa B', equipment: 'Smart Board, Projektor, Mikrofon Wireless' },
+    { name: 'B202', capacity: 50, building: 'Ndërtesa B', equipment: 'Smart Board, Projektor, Sound System' },
+    { name: 'C301', capacity: 80, building: 'Amfiteatri Qendror', equipment: 'Projektor Dual, Sound System, 2x Mikrofon, Klimë' },
+    { name: 'LAB1', capacity: 25, building: 'Ndërtesa C - Laboratorë', equipment: '25 PC Workstation, Projektor, Switch LAN Gigabit' },
+    { name: 'LAB2', capacity: 30, building: 'Ndërtesa C - Laboratorë', equipment: '30 PC iMac, Smart Board, Set Pajisjesh Robotike' }
+  ];
+
+  const rooms = [];
+  for (const r of roomsData) {
+    const room = await prisma.room.upsert({
+      where: { name: r.name },
+      update: r,
+      create: r
+    });
+    rooms.push(room);
+  }
+  console.log('✅ U shtuan/përditësuan 8 salla dhe amfiteatro.');
 
   // 4. Krijimi i 5 Njoftimeve me nivele të ndryshme targetimi
   console.log('📢 Duke krijuar 5 njoftime...');
@@ -322,66 +266,66 @@ async function main() {
         room: 'A101'
       },
       {
-        subject: 'Inxhinieri Softi',
+        subject: 'Baza të Dhënash të Avancuara',
         professorId: prof3.id,
         faculty: 'Fakulteti i Teknologjisë së Informacionit',
         group: 'FTI-1',
         dayOfWeek: 2, // E Martë
+        startTime: '11:00',
+        endTime: '13:00',
+        room: 'LAB1'
+      },
+      {
+        subject: 'Inxhinieri Softi',
+        professorId: prof1.id,
+        faculty: 'Fakulteti i Teknologjisë së Informacionit',
+        group: 'FTI-1',
+        dayOfWeek: 3, // E Mërkurë
         startTime: '10:00',
         endTime: '12:00',
         room: 'B201'
       },
       {
-        subject: 'Laborator Programimi në Web',
-        professorId: prof1.id,
-        faculty: 'Fakulteti i Teknologjisë së Informacionit',
-        group: 'FTI-1',
-        dayOfWeek: 3, // E Mërkurë
-        startTime: '12:00',
-        endTime: '14:00',
-        room: 'LAB1'
-      },
-      {
-        subject: 'Bazat e të Dhënave',
+        subject: 'Rrjeta Kompjuterike & Siguri',
         professorId: prof3.id,
         faculty: 'Fakulteti i Teknologjisë së Informacionit',
         group: 'FTI-1',
         dayOfWeek: 4, // E Enjte
-        startTime: '09:00',
-        endTime: '11:00',
-        room: 'A102'
+        startTime: '13:00',
+        endTime: '15:00',
+        room: 'LAB2'
       },
 
       // FTI-2 (Informatikë Viti 3)
       {
-        subject: 'Arkitekturë Kompjuterike & Sisteme',
+        subject: 'Inteligjencë Artificiale & Machine Learning',
         professorId: prof3.id,
         faculty: 'Fakulteti i Teknologjisë së Informacionit',
         group: 'FTI-2',
         dayOfWeek: 1, // E Hënë
-        startTime: '11:00',
-        endTime: '13:00',
-        room: 'A103'
+        startTime: '12:00',
+        endTime: '14:00',
+        room: 'C301'
       },
       {
-        subject: 'Inteligjencë Artificiale & Machine Learning',
+        subject: 'Arkitektura Cloud & Microservices',
         professorId: prof1.id,
         faculty: 'Fakulteti i Teknologjisë së Informacionit',
         group: 'FTI-2',
         dayOfWeek: 3, // E Mërkurë
-        startTime: '09:00',
-        endTime: '11:00',
-        room: 'LAB2'
+        startTime: '14:00',
+        endTime: '16:00',
+        room: 'LAB1'
       },
       {
-        subject: 'Siguri Informacioni & Rrjeta',
+        subject: 'Siguri Kibernetike e Avancuar',
         professorId: prof3.id,
         faculty: 'Fakulteti i Teknologjisë së Informacionit',
         group: 'FTI-2',
         dayOfWeek: 5, // E Premte
-        startTime: '10:00',
-        endTime: '12:00',
-        room: 'B202'
+        startTime: '09:00',
+        endTime: '11:00',
+        room: 'LAB2'
       },
 
       // BIZ-1 (Biznes Viti 1)
@@ -393,27 +337,27 @@ async function main() {
         dayOfWeek: 1, // E Hënë
         startTime: '10:00',
         endTime: '12:00',
-        room: 'C301'
+        room: 'B202'
       },
       {
-        subject: 'Kontabilitet Financiar',
+        subject: 'Mikroekonomi e Aplikuar',
         professorId: prof2.id,
         faculty: 'Fakulteti Ekonomik',
         group: 'BIZ-1',
         dayOfWeek: 2, // E Martë
         startTime: '09:00',
         endTime: '11:00',
-        room: 'B201'
+        room: 'C301'
       },
       {
-        subject: 'Marketing Dixhital',
+        subject: 'Statistikë për Vendimmarrje',
         professorId: prof2.id,
         faculty: 'Fakulteti Ekonomik',
         group: 'BIZ-1',
         dayOfWeek: 4, // E Enjte
         startTime: '11:00',
         endTime: '13:00',
-        room: 'A101'
+        room: 'A102'
       }
     ]
   });
@@ -421,159 +365,152 @@ async function main() {
 
   // 6. Krijimi i 6 Detyrave Kursi
   console.log('📝 Duke krijuar 6 detyrat...');
+  const now = new Date();
+  const pastDate = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000); // 2 ditë më parë (për të testuar LATE/MISSING)
+  const in3Days = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+  const in7Days = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const in14Days = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
 
-  const in2Days = new Date();
-  in2Days.setDate(in2Days.getDate() + 2);
-
-  const in4Days = new Date();
-  in4Days.setDate(in4Days.getDate() + 4);
-
-  const in7Days = new Date();
-  in7Days.setDate(in7Days.getDate() + 7);
-
-  const in10Days = new Date();
-  in10Days.setDate(in10Days.getDate() + 10);
-
-  const in14Days = new Date();
-  in14Days.setDate(in14Days.getDate() + 14);
-
-  const inPast3Days = new Date();
-  inPast3Days.setDate(inPast3Days.getDate() - 3);
-
-  const ass1 = await prisma.assignment.create({
+  const assign1 = await prisma.assignment.create({
     data: {
-      title: 'Detyrë Kursi: Zhvillimi i Platformës SMARTCAMPUS',
-      description: 'Ndërtoni një aplikacion të plotë web sipas specifikimeve funksionale (FR-01 deri FR-18). Dorëzoni kodin e projektit (arkivë ZIP) dhe dokumentacionin.',
+      title: 'Detyrë Kursi 1: Dokumentacioni i Projektit SMARTCAMPUS',
+      description: 'Përgatitni specifikimin funksional, diagramet UML dhe arkitekturën teknike të aplikacionit sipas kërkesave të lëndës.',
       deadline: in7Days,
+      professorId: prof1.id,
       faculty: 'Fakulteti i Teknologjisë së Informacionit',
-      group: 'FTI-1',
-      professorId: prof1.id
+      group: 'FTI-1'
     }
   });
 
-  const ass2 = await prisma.assignment.create({
+  const assign2 = await prisma.assignment.create({
     data: {
-      title: 'Projekt Kërkimor: Analiza e Kërkesave të Sistemeve Enterprise',
-      description: 'Zgjidhni një organizatë reale dhe hartoni diagramat UML (Use Case, Activity, Sequence) për menaxhimin e proceseve të brendshme.',
-      deadline: in2Days, // Afat i afërt (2 ditë) për të testuar paralajmërimin e kuq
+      title: 'Lab 2: Optimizimi i Pyetëzimeve SQL dhe Indeksimi',
+      description: 'Zbatoni indekset e duhura në SQLite/PostgreSQL dhe krahasoni kohën e ekzekutimit të pyetëzimeve me EXPLAIN QUERY PLAN.',
+      deadline: pastDate, // Afat i kaluar për të provuar vonimet
+      professorId: prof3.id,
       faculty: 'Fakulteti i Teknologjisë së Informacionit',
-      group: 'FTI-1',
-      professorId: prof3.id
+      group: 'FTI-1'
     }
   });
 
-  const ass3 = await prisma.assignment.create({
+  const assign3 = await prisma.assignment.create({
     data: {
-      title: 'Laborator 3: Optimizimi i Pyetjeve SQL dhe Indeksimi',
-      description: 'Zbatoni indekset B-Tree dhe matni kohën e ekzekutimit të query-ve në një dataset prej 100,000 rreshtash. Dorëzoni raportin PDF me shpjegimet.',
-      deadline: in10Days,
-      faculty: 'Fakulteti i Teknologjisë së Informacionit',
-      group: 'FTI-1',
-      professorId: prof3.id
-    }
-  });
-
-  const ass4 = await prisma.assignment.create({
-    data: {
-      title: 'Ese mbi Transformimin Dixhital në Sektorin Financiar',
-      description: 'Analizoni sfidat dhe mundësitë e teknologjisë Fintech dhe pagesave pa para fizike në tregun vendas.',
-      deadline: in4Days,
-      faculty: 'Fakulteti Ekonomik',
-      group: 'BIZ-1',
-      professorId: prof2.id
-    }
-  });
-
-  const ass5 = await prisma.assignment.create({
-    data: {
-      title: 'Projekt Semestral: Modeli i Inteligjencës Artificiale për Klasifikim',
-      description: 'Trajnoni një model me Python & Scikit-Learn mbi datasetin e paracaktuar dhe vlerësoni metrikat F1-score dhe Accuracy.',
+      title: 'Mini-Projekt: Integrimi i REST API me JWT & Middleware',
+      description: 'Ndërtoni rrugët e mbrojtura me JWT, validoni rolet përkatëse dhe shkruani teste me Jest ose Postman collection.',
       deadline: in14Days,
+      professorId: prof1.id,
       faculty: 'Fakulteti i Teknologjisë së Informacionit',
-      group: 'FTI-2',
-      professorId: prof1.id
+      group: 'FTI-1'
     }
   });
 
-  const ass6 = await prisma.assignment.create({
+  const assign4 = await prisma.assignment.create({
     data: {
-      title: 'Detyrë Hulumtuese: Metodologjitë Agile vs Waterfall',
-      description: 'Krahasim i thelluar i metodologjive tradicionale kundrejt Scrum dhe Kanban në projekte softuerike.',
-      deadline: inPast3Days, // Afat i kaluar për të testuar statusin LATE
+      title: 'Modelimi Prediktiv me Scikit-Learn',
+      description: 'Ndërtoni një pipeline klasifikimi mbi dataset-in universitar dhe raportoni metrikat Accuracy, Precision dhe F1-Score.',
+      deadline: in7Days,
+      professorId: prof3.id,
       faculty: 'Fakulteti i Teknologjisë së Informacionit',
-      group: 'FTI-1',
-      professorId: prof1.id
+      group: 'FTI-2'
+    }
+  });
+
+  const assign5 = await prisma.assignment.create({
+    data: {
+      title: 'Auditimi i Sigurisë së Rrjetit dhe Penetration Test',
+      description: 'Analizoni trafikun me Wireshark, identifikoni portat e hapura dhe shkruani një raport me rekomandime sigurie.',
+      deadline: in3Days,
+      professorId: prof3.id,
+      faculty: 'Fakulteti i Teknologjisë së Informacionit',
+      group: 'FTI-2'
+    }
+  });
+
+  const assign6 = await prisma.assignment.create({
+    data: {
+      title: 'Plani i Biznesit: FinTech Startup në Shqipëri',
+      description: 'Zhvilloni analizën SWOT, modelin Canvas të të ardhurave dhe parashikimin financiar 3-vjeçar për një startup pagesash dixhitale.',
+      deadline: in14Days,
+      professorId: prof2.id,
+      faculty: 'Fakulteti Ekonomik',
+      group: 'BIZ-1'
     }
   });
   console.log('✅ U krijuan 6 detyra kursi.');
 
-  // 7. Krijimi i 4 Dorëzimeve me statuse të ndryshme (SUBMITTED, GRADED, LATE)
+  // 7. Krijimi i 4 Dorëzimeve (SUBMITTED, GRADED, LATE)
   console.log('📤 Duke krijuar 4 dorëzimet...');
-  await prisma.submission.createMany({
-    data: [
-      {
-        assignmentId: ass1.id,
-        studentId: student1.id,
-        content: 'Përshëndetje profesor, kemi zbatuar të gjitha modulet dhe po punojmë në testimin e fundit.',
-        status: 'SUBMITTED',
-        submittedAt: new Date()
-      },
-      {
-        assignmentId: ass1.id,
-        studentId: student2.id,
-        content: 'Dorëzimi i projektit të plotë nga grupi ynë me të gjitha kërkesat e plotësuara.',
-        status: 'GRADED',
-        grade: 96,
-        feedback: 'Punë e shkëlqyer! Kodi është i pastër, arkitektura modulare dhe dokumentacioni i detajuar.',
-        submittedAt: new Date(Date.now() - 24 * 3600 * 1000)
-      },
-      {
-        assignmentId: ass6.id,
-        studentId: student7.id,
-        content: 'Dorëzimi i detyrës mbi metodologjitë Agile. Më falni për vonesën për arsye shëndetësore.',
-        status: 'LATE',
-        submittedAt: new Date(Date.now() - 12 * 3600 * 1000)
-      },
-      {
-        assignmentId: ass4.id,
-        studentId: student5.id,
-        content: 'Ese e plotë mbi transformimin dixhital në bankat shqiptare me të dhëna nga Banka e Shqipërisë.',
-        status: 'GRADED',
-        grade: 88,
-        feedback: 'Analizë shumë e mirë e rasteve studimore. Kujdes me bibliografinë.',
-        submittedAt: new Date(Date.now() - 48 * 3600 * 1000)
-      }
-    ]
+
+  // Dorëzim i vlerësuar (GRADED)
+  await prisma.submission.create({
+    data: {
+      assignmentId: assign1.id,
+      studentId: student1.id,
+      fileUrl: '/uploads/demo-smartcampus-specifikim.pdf',
+      content: 'I nderuar profesor, po ju dërgoj specifikimin e plotë arkitekturor të projektit SMARTCAMPUS bashkë me diagramet ER dhe sekvenciale.',
+      status: 'GRADED',
+      grade: 9.5,
+      feedback: 'Punim i shkëlqyer! Diagramet janë të qarta dhe arkitektura modulare reflekton kërkesat e lëndës.',
+      submittedAt: new Date(now.getTime() - 24 * 60 * 60 * 1000)
+    }
+  });
+
+  // Dorëzim në kohë, në pritje të vlerësimit (SUBMITTED)
+  await prisma.submission.create({
+    data: {
+      assignmentId: assign1.id,
+      studentId: student2.id,
+      fileUrl: '/uploads/demo-sara-fti1-assignment.pdf',
+      content: 'Bashkangjitur gjeni analizën e kërkesave për modulin e rezervimit të sallave.',
+      status: 'SUBMITTED',
+      submittedAt: new Date(now.getTime() - 12 * 60 * 60 * 1000)
+    }
+  });
+
+  // Dorëzim i vonuar (LATE) për detyrën 2
+  await prisma.submission.create({
+    data: {
+      assignmentId: assign2.id,
+      studentId: student1.id,
+      fileUrl: '/uploads/demo-sql-optimization-report.pdf',
+      content: 'Dorëzoj raportin e optimizimit të pyetëzimeve SQL me vonesë për arsye shëndetësore.',
+      status: 'LATE',
+      submittedAt: now
+    }
+  });
+
+  // Dorëzim tjetër i vlerësuar (GRADED)
+  await prisma.submission.create({
+    data: {
+      assignmentId: assign6.id,
+      studentId: student5.id,
+      fileUrl: '/uploads/demo-business-plan-fintech.pdf',
+      content: 'Plani i biznesit për startup-in FinTech me analizën e tregut shqiptar.',
+      status: 'GRADED',
+      grade: 10.0,
+      feedback: 'Analizë shumë e thelluar financiare dhe propozim vlere i qartë.',
+      submittedAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000)
+    }
   });
   console.log('✅ U regjistruan 4 dorëzime me statuse të ndryshme.');
 
-  // 8. Krijimi i 5 Rezervimeve me statuse të ndryshme (PENDING, APPROVED, REJECTED)
+  // 8. Krijimi i 5 Rezervimeve të Sallave (PENDING, APPROVED, REJECTED)
   console.log('🔖 Duke krijuar 5 rezervimet e sallave...');
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
-  const in3Days = new Date();
-  in3Days.setDate(in3Days.getDate() + 3);
-
-  const in5Days = new Date();
-  in5Days.setDate(in5Days.getDate() + 5);
-
-  const in7DaysBooking = new Date();
-  in7DaysBooking.setDate(in7DaysBooking.getDate() + 7);
-
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
+  const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+  const in5Days = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000);
+  const in7DaysBooking = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
   await prisma.booking.createMany({
     data: [
       {
         roomId: rooms[0].id, // A101
-        userId: student1.id,
+        userId: prof1.id,
         date: tomorrow,
         startTime: '14:00',
         endTime: '16:00',
-        purpose: 'Punë në grup për projektin e lëndës Hartim dhe Menaxhim Projektesh',
-        status: 'PENDING'
+        purpose: 'Seminar plotësues për studentët e diplomës mbi mikroshërbimet',
+        status: 'APPROVED'
       },
       {
         roomId: rooms[3].id, // B201

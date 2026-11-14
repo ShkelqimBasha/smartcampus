@@ -9,6 +9,7 @@ import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // Pages
+import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -28,7 +29,8 @@ function App() {
         <ToastProvider>
           <BrowserRouter>
             <Routes>
-              {/* Rrugët Publike */}
+              {/* Rrugët Publike (Jashtë ProtectedRoute) */}
+              <Route path="/" element={<Landing />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
 
@@ -51,8 +53,8 @@ function App() {
                 </Route>
               </Route>
 
-              {/* Rruga e parazgjedhur */}
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              {/* Rruga e parazgjedhur në rast rruge të pasaktë */}
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </BrowserRouter>
         </ToastProvider>

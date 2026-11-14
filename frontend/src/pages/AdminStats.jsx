@@ -14,12 +14,13 @@ import {
 } from 'chart.js';
 import { Doughnut, Bar, Line } from 'react-chartjs-2';
 import { CardSkeleton } from '../components/Skeleton';
+import { motion } from 'framer-motion';
 import {
   Users,
   Bell,
-  FileCheck2,
+  FileText,
   BookmarkCheck,
-  Building,
+  DoorOpen,
   GraduationCap,
   TrendingUp,
   Activity
@@ -77,7 +78,7 @@ const AdminStats = () => {
 
   if (!stats) {
     return (
-      <div className="bg-white p-12 rounded-xl border border-slate-200 text-center text-slate-400">
+      <div className="bg-white dark:bg-slate-900 p-12 rounded-2xl border border-slate-200 dark:border-slate-800 text-center text-slate-400">
         <p>Statistikat nuk janë të disponueshme për momentin.</p>
       </div>
     );
@@ -133,7 +134,7 @@ const AdminStats = () => {
     ]
   };
 
-  // 4. Aktiviteti Mujor i Platformës (Line Chart - Kërkesa 5.2)
+  // 4. Aktiviteti Mujor i Platformës (Line Chart)
   const monthlyActivityData = {
     labels: ['Tetor', 'Nëntor', 'Dhjetor', 'Janar', 'Shkurt', 'Mars'],
     datasets: [
@@ -153,136 +154,204 @@ const AdminStats = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Statistika & Raporte</h1>
-        <p className="text-xs sm:text-sm text-slate-500 mt-1">
+        <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+          Statistika & Raporte
+        </h1>
+        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
           Pamje e përgjithshme analitike mbi përdoruesit, detyrat dhe përdorimin e sallave
         </p>
       </div>
 
-      {/* 5 Karta Statistikash në Krye (Kërkesa 5.2) */}
+      {/* 5 Karta Statistikash në Krye */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {/* Karta 1: Përdorues */}
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow hover:shadow-md transition">
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition"
+        >
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
               <Users className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Përdorues</p>
-              <p className="text-2xl font-extrabold text-slate-900">{stats.users?.total}</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">
+                Përdorues
+              </p>
+              <p className="text-2xl font-black text-slate-900 dark:text-white">
+                {stats.users?.total}
+              </p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Karta 2: Detyra */}
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow hover:shadow-md transition">
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.05 }}
+          className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition"
+        >
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
-              <FileCheck2 className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">
+              <FileText className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Detyra</p>
-              <p className="text-2xl font-extrabold text-slate-900">{stats.assignments?.total}</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">
+                Detyra
+              </p>
+              <p className="text-2xl font-black text-slate-900 dark:text-white">
+                {stats.assignments?.total}
+              </p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Karta 3: Rezervime */}
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow hover:shadow-md transition">
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+          className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition"
+        >
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
               <BookmarkCheck className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Rezervime</p>
-              <p className="text-2xl font-extrabold text-slate-900">{stats.rooms?.bookings?.total}</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">
+                Rezervime
+              </p>
+              <p className="text-2xl font-black text-slate-900 dark:text-white">
+                {stats.rooms?.bookings?.total}
+              </p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Karta 4: Njoftime */}
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow hover:shadow-md transition">
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.15 }}
+          className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition"
+        >
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
               <Bell className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Njoftime</p>
-              <p className="text-2xl font-extrabold text-slate-900">{stats.announcements?.total || 5}</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">
+                Njoftime
+              </p>
+              <p className="text-2xl font-black text-slate-900 dark:text-white">
+                {stats.announcements?.total || 5}
+              </p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Karta 5: Salla */}
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow hover:shadow-md transition col-span-2 lg:col-span-1">
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+          className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition col-span-2 lg:col-span-1"
+        >
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
-              <Building className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+              <DoorOpen className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Salla</p>
-              <p className="text-2xl font-extrabold text-slate-900">{stats.rooms?.total}</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">
+                Salla
+              </p>
+              <p className="text-2xl font-black text-slate-900 dark:text-white">
+                {stats.rooms?.total}
+              </p>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Grafikët (Grid 2 Kolona) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Grafik 1: Përdoruesit sipas Rolit (Doughnut) */}
-        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow">
-          <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center space-x-2">
-            <GraduationCap className="w-4 h-4 text-blue-600" />
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm"
+        >
+          <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center space-x-2">
+            <GraduationCap className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             <span>Përdoruesit sipas Rolit</span>
           </h3>
           <div className="max-w-[240px] mx-auto py-3">
-            <Doughnut data={usersChartData} options={{ responsive: true, plugins: { legend: { position: 'bottom' } } }} />
+            <Doughnut
+              data={usersChartData}
+              options={{ responsive: true, plugins: { legend: { position: 'bottom' } } }}
+            />
           </div>
-          <div className="mt-4 pt-3 border-t border-slate-100 grid grid-cols-3 text-center text-xs">
+          <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 grid grid-cols-3 text-center text-xs">
             <div>
               <p className="font-extrabold text-emerald-600">{stats.users?.students}</p>
-              <p className="text-slate-400 text-[11px]">Studentë</p>
+              <p className="text-slate-400 dark:text-slate-500 text-[11px]">Studentë</p>
             </div>
             <div>
               <p className="font-extrabold text-blue-600">{stats.users?.professors}</p>
-              <p className="text-slate-400 text-[11px]">Pedagogë</p>
+              <p className="text-slate-400 dark:text-slate-500 text-[11px]">Pedagogë</p>
             </div>
             <div>
               <p className="font-extrabold text-purple-600">{stats.users?.admins}</p>
-              <p className="text-slate-400 text-[11px]">Administratorë</p>
+              <p className="text-slate-400 dark:text-slate-500 text-[11px]">Administratorë</p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Grafik 2: Statusi i Dorëzimeve të Detyrave (Doughnut) */}
-        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow">
-          <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center space-x-2">
-            <TrendingUp className="w-4 h-4 text-emerald-600" />
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm"
+        >
+          <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center space-x-2">
+            <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <span>Statusi i Dorëzimeve të Detyrave</span>
           </h3>
           <div className="max-w-[240px] mx-auto py-3">
-            <Doughnut data={assignmentsChartData} options={{ responsive: true, plugins: { legend: { position: 'bottom' } } }} />
+            <Doughnut
+              data={assignmentsChartData}
+              options={{ responsive: true, plugins: { legend: { position: 'bottom' } } }}
+            />
           </div>
-          <div className="mt-4 pt-3 border-t border-slate-100 grid grid-cols-3 text-center text-xs">
+          <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 grid grid-cols-3 text-center text-xs">
             <div>
               <p className="font-extrabold text-emerald-600">{stats.assignments?.graded}</p>
-              <p className="text-slate-400 text-[11px]">Të Vlerësuara</p>
+              <p className="text-slate-400 dark:text-slate-500 text-[11px]">Të Vlerësuara</p>
             </div>
             <div>
               <p className="font-extrabold text-blue-600">{stats.assignments?.submitted}</p>
-              <p className="text-slate-400 text-[11px]">Në Pritje</p>
+              <p className="text-slate-400 dark:text-slate-500 text-[11px]">Në Pritje</p>
             </div>
             <div>
               <p className="font-extrabold text-amber-600">{stats.assignments?.late}</p>
-              <p className="text-slate-400 text-[11px]">Me Vonesë</p>
+              <p className="text-slate-400 dark:text-slate-500 text-[11px]">Me Vonesë</p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Grafik 3: Rezervimet sipas Sallave (Bar Chart) */}
-        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow">
-          <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center space-x-2">
-            <Building className="w-4 h-4 text-indigo-600" />
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.15 }}
+          className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm"
+        >
+          <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center space-x-2">
+            <DoorOpen className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
             <span>Përdorimi i Sallave (Rezervime sipas Sallës)</span>
           </h3>
           <div className="h-60">
@@ -300,12 +369,17 @@ const AdminStats = () => {
               }}
             />
           </div>
-        </div>
+        </motion.div>
 
-        {/* Grafik 4: Aktiviteti Mujor (Line Chart - Kërkesa 5.2) */}
-        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow">
-          <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center space-x-2">
-            <Activity className="w-4 h-4 text-violet-600" />
+        {/* Grafik 4: Aktiviteti Mujor (Line Chart) */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+          className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm"
+        >
+          <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center space-x-2">
+            <Activity className="w-4 h-4 text-violet-600 dark:text-violet-400" />
             <span>Aktiviteti Mujor në Platformë</span>
           </h3>
           <div className="h-60">
@@ -322,7 +396,7 @@ const AdminStats = () => {
               }}
             />
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

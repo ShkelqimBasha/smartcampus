@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { motion } from 'framer-motion';
 import {
   GraduationCap,
   Mail,
   Lock,
   AlertCircle,
   ArrowRight,
-  ShieldCheck,
+  Shield,
   BookOpen,
   Loader2,
   ChevronLeft
@@ -91,7 +92,12 @@ const Login = () => {
         </Link>
       </div>
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center relative z-10">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="sm:mx-auto sm:w-full sm:max-w-md text-center relative z-10"
+      >
         <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-2xl mb-4">
           <GraduationCap className="w-12 h-12" />
         </div>
@@ -99,26 +105,35 @@ const Login = () => {
           SMARTCAMPUS
         </h1>
         <p className="mt-1 text-sm text-blue-100/90 font-medium">
-          Platformë e Integruar Universitare
+          Platforma e Integruar Universitare
         </p>
-      </div>
+      </motion.div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0 relative z-10">
-        <div className="bg-white py-8 px-6 sm:px-10 shadow-2xl rounded-2xl border border-slate-100">
-          <h2 className="text-xl font-bold text-slate-900 text-center mb-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.97 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="bg-white dark:bg-slate-900 py-8 px-6 sm:px-10 shadow-2xl rounded-2xl border border-slate-100 dark:border-slate-800"
+        >
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white text-center mb-6">
             Kyçuni në Platformë
           </h2>
 
           {error && (
-            <div className="mb-5 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-start space-x-3 shadow-sm">
-              <AlertCircle className="w-5 h-5 flex-shrink-0 text-red-600 mt-0.5" />
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-5 p-4 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-xs font-semibold flex items-start space-x-3 shadow-sm"
+            >
+              <AlertCircle className="w-5 h-5 flex-shrink-0 text-red-600 dark:text-red-400 mt-0.5" />
               <span className="leading-relaxed">{error}</span>
-            </div>
+            </motion.div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Email Institucional
               </label>
               <div className="relative">
@@ -132,13 +147,13 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="student@smartcampus.al"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-400 disabled:bg-slate-50 disabled:opacity-75"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-400 disabled:bg-slate-50 disabled:opacity-75"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Fjalëkalimi
               </label>
               <div className="relative">
@@ -152,19 +167,20 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-400 disabled:bg-slate-50 disabled:opacity-75"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-400 disabled:bg-slate-50 disabled:opacity-75"
                 />
               </div>
             </div>
 
-            <button
+            <motion.button
               type="submit"
               disabled={loading}
+              whileTap={{ scale: 0.98 }}
               className="w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white font-semibold text-sm shadow-md shadow-blue-500/25 transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed mt-2"
             >
               {loading && !activeDemo ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin text-white" />
+                  <Loader2 className="w-5 h-5 animate-spin text-white" />
                   <span>Duke u kyçur...</span>
                 </>
               ) : (
@@ -173,77 +189,86 @@ const Login = () => {
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
-            </button>
+            </motion.button>
           </form>
 
           {/* Quick Login Buttons (Demo) */}
-          <div className="mt-6 pt-6 border-t border-slate-100">
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider text-center mb-3">
+          <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
+            <p className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider text-center mb-3">
               Kyçje e Shpejtë me 1 Klik (Demo)
             </p>
             <div className="grid grid-cols-3 gap-2.5">
-              {/* Student */}
-              <button
+              {/* Student (Blu) */}
+              <motion.button
                 type="button"
                 onClick={() => handleQuickLogin('student')}
                 disabled={loading}
-                className="py-2.5 px-2 text-xs font-bold rounded-xl bg-gradient-to-b from-blue-50 to-blue-100/70 text-blue-700 border border-blue-200 hover:border-blue-400 hover:shadow-sm transition-all text-center flex flex-col items-center justify-center space-y-1 disabled:opacity-50 disabled:cursor-not-allowed group"
+                whileTap={{ scale: 0.96 }}
+                whileHover={{ scale: 1.02 }}
+                className="py-2.5 px-2 text-xs font-bold rounded-xl bg-gradient-to-b from-blue-50 to-blue-100/70 dark:from-blue-950/60 dark:to-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 hover:border-blue-400 transition-all text-center flex flex-col items-center justify-center space-y-1 disabled:opacity-50 disabled:cursor-not-allowed group shadow-sm"
               >
                 {loading && activeDemo === 'student' ? (
-                  <Loader2 className="w-5 h-5 animate-spin text-blue-600 my-0.5" />
+                  <Loader2 className="w-5 h-5 animate-spin text-blue-600 dark:text-blue-400 my-0.5" />
                 ) : (
-                  <GraduationCap className="w-5 h-5 text-blue-600 group-hover:scale-110 transition-transform" />
+                  <GraduationCap className="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
                 )}
                 <span className="text-[12px] font-bold">Student</span>
-                <span className="text-[9px] font-medium text-blue-500">demo</span>
-              </button>
+                <span className="text-[9px] font-medium text-blue-500 dark:text-blue-400">demo</span>
+              </motion.button>
 
-              {/* Pedagog */}
-              <button
+              {/* Pedagog (Vjollcë) */}
+              <motion.button
                 type="button"
                 onClick={() => handleQuickLogin('pedagog')}
                 disabled={loading}
-                className="py-2.5 px-2 text-xs font-bold rounded-xl bg-gradient-to-b from-purple-50 to-purple-100/70 text-purple-700 border border-purple-200 hover:border-purple-400 hover:shadow-sm transition-all text-center flex flex-col items-center justify-center space-y-1 disabled:opacity-50 disabled:cursor-not-allowed group"
+                whileTap={{ scale: 0.96 }}
+                whileHover={{ scale: 1.02 }}
+                className="py-2.5 px-2 text-xs font-bold rounded-xl bg-gradient-to-b from-purple-50 to-purple-100/70 dark:from-purple-950/60 dark:to-purple-900/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 hover:border-purple-400 transition-all text-center flex flex-col items-center justify-center space-y-1 disabled:opacity-50 disabled:cursor-not-allowed group shadow-sm"
               >
                 {loading && activeDemo === 'pedagog' ? (
-                  <Loader2 className="w-5 h-5 animate-spin text-purple-600 my-0.5" />
+                  <Loader2 className="w-5 h-5 animate-spin text-purple-600 dark:text-purple-400 my-0.5" />
                 ) : (
-                  <BookOpen className="w-5 h-5 text-purple-600 group-hover:scale-110 transition-transform" />
+                  <BookOpen className="w-5 h-5 text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform" />
                 )}
                 <span className="text-[12px] font-bold">Pedagog</span>
-                <span className="text-[9px] font-medium text-purple-500">demo</span>
-              </button>
+                <span className="text-[9px] font-medium text-purple-500 dark:text-purple-400">demo</span>
+              </motion.button>
 
-              {/* Admin */}
-              <button
+              {/* Admin (E Kuqe) */}
+              <motion.button
                 type="button"
                 onClick={() => handleQuickLogin('admin')}
                 disabled={loading}
-                className="py-2.5 px-2 text-xs font-bold rounded-xl bg-gradient-to-b from-emerald-50 to-emerald-100/70 text-emerald-800 border border-emerald-200 hover:border-emerald-400 hover:shadow-sm transition-all text-center flex flex-col items-center justify-center space-y-1 disabled:opacity-50 disabled:cursor-not-allowed group"
+                whileTap={{ scale: 0.96 }}
+                whileHover={{ scale: 1.02 }}
+                className="py-2.5 px-2 text-xs font-bold rounded-xl bg-gradient-to-b from-red-50 to-red-100/70 dark:from-red-950/60 dark:to-red-900/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 hover:border-red-400 transition-all text-center flex flex-col items-center justify-center space-y-1 disabled:opacity-50 disabled:cursor-not-allowed group shadow-sm"
               >
                 {loading && activeDemo === 'admin' ? (
-                  <Loader2 className="w-5 h-5 animate-spin text-emerald-600 my-0.5" />
+                  <Loader2 className="w-5 h-5 animate-spin text-red-600 dark:text-red-400 my-0.5" />
                 ) : (
-                  <ShieldCheck className="w-5 h-5 text-emerald-700 group-hover:scale-110 transition-transform" />
+                  <Shield className="w-5 h-5 text-red-600 dark:text-red-400 group-hover:scale-110 transition-transform" />
                 )}
                 <span className="text-[12px] font-bold">Admin</span>
-                <span className="text-[9px] font-medium text-emerald-600">demo</span>
-              </button>
+                <span className="text-[9px] font-medium text-red-500 dark:text-red-400">demo</span>
+              </motion.button>
             </div>
-            <p className="text-[11px] text-slate-400 text-center mt-3">
-              Fjalëkalimi i përbashkët: <code className="bg-slate-100 px-1.5 py-0.5 rounded font-mono text-slate-700 font-semibold">demo123</code>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 text-center mt-3">
+              Fjalëkalimi i përbashkët:{' '}
+              <code className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono text-slate-700 dark:text-slate-300 font-semibold">
+                demo123
+              </code>
             </p>
           </div>
 
           <div className="mt-6 text-center">
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Nuk keni ende llogari?{' '}
-              <Link to="/register" className="font-bold text-blue-600 hover:text-blue-700">
+              <Link to="/register" className="font-bold text-blue-600 dark:text-blue-400 hover:underline">
                 Regjistrohu këtu
               </Link>
             </p>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

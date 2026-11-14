@@ -4,11 +4,12 @@ import { useToast } from '../context/ToastContext';
 import { schedulesService } from '../services/api';
 import { CardSkeleton } from '../components/Skeleton';
 import EmptyState from '../components/EmptyState';
+import { motion } from 'framer-motion';
 import {
   Calendar as CalendarIcon,
   Plus,
   Clock,
-  Building,
+  DoorOpen,
   User,
   Trash2,
   Edit2,
@@ -23,13 +24,12 @@ const DAYS = [
   { id: 5, name: 'E Premte' }
 ];
 
-// Paletë ngjyrash të buta për kartat e lëndëve (Kërkesa 5.2)
 const subjectColorPalettes = [
-  'border-l-blue-600 bg-blue-50/20',
-  'border-l-purple-600 bg-purple-50/20',
-  'border-l-emerald-600 bg-emerald-50/20',
-  'border-l-amber-600 bg-amber-50/20',
-  'border-l-rose-600 bg-rose-50/20'
+  'border-l-blue-600 bg-blue-50/20 dark:bg-blue-950/20',
+  'border-l-purple-600 bg-purple-50/20 dark:bg-purple-950/20',
+  'border-l-emerald-600 bg-emerald-50/20 dark:bg-emerald-950/20',
+  'border-l-amber-600 bg-amber-50/20 dark:bg-amber-950/20',
+  'border-l-rose-600 bg-rose-50/20 dark:bg-rose-950/20'
 ];
 
 const Schedule = () => {
@@ -123,7 +123,7 @@ const Schedule = () => {
         showToast('Orari u përditësua me sukses!', 'success');
       } else {
         await schedulesService.create(formData);
-        showToast('Orari u shtua me sukses!', 'success');
+        showToast('Orari i ri u regjistrua me sukses!', 'success');
       }
       setShowModal(false);
       fetchSchedules();
@@ -137,39 +137,42 @@ const Schedule = () => {
     }
   };
 
-  // Numërimi i lëndëve për secilën ditë
+  const currentDaySchedules = schedules
+    .filter((s) => s.dayOfWeek === selectedDay)
+    .sort((a, b) => a.startTime.localeCompare(b.startTime));
+
   const getSubjectCountForDay = (dayId) => {
     return schedules.filter((s) => s.dayOfWeek === dayId).length;
   };
-
-  const currentDaySchedules = schedules.filter(
-    (item) => item.dayOfWeek === selectedDay
-  );
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Orari Mësimor Javor</h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+            Orari Mësimor Javor
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
             Plani javor i leksioneve, seminareve dhe laboratorëve
           </p>
         </div>
 
         {(isAdmin || isProfessor) && (
-          <button
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={handleOpenCreate}
-            className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold text-xs shadow-md shadow-blue-500/20 transition-all duration-150"
+            className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition-all duration-150"
           >
             <Plus className="w-4 h-4" />
             <span>Shto Orar</span>
-          </button>
+          </motion.button>
         )}
       </div>
 
-      {/* Day Tabs me Numër Lëndësh (Kërkesa 5.2) */}
-      <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-2 overflow-x-auto">
+      {/* Day Tabs me Numër Lëndësh */}
+      <div className="bg-white dark:bg-slate-900 p-2 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center space-x-2 overflow-x-auto">
         {DAYS.map((day) => {
           const count = getSubjectCountForDay(day.id);
           const isSelected = selectedDay === day.id;
@@ -181,15 +184,15 @@ const Schedule = () => {
               className={`flex-1 min-w-[120px] py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-2 ${
                 isSelected
                   ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <span>{day.name}</span>
               <span
                 className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${
                   isSelected
-                    ? 'bg-white/20 text-white'
-                    : 'bg-slate-200 text-slate-700'
+                    ? 'bg-white/25 text-white'
+                    : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
                 }`}
               >
                 {count}
@@ -211,7 +214,7 @@ const Schedule = () => {
           icon={CalendarIcon}
           title={`Nuk ka lëndë të planifikuara për ${DAYS.find((d) => d.id === selectedDay)?.name}`}
           description="Nuk ka orë mësimi të regjistruara për këtë ditë të javës."
-          actionLabel={(isAdmin || isProfessor) ? "Shto Lëndë në Orar" : null}
+          actionLabel={isAdmin || isProfessor ? 'Shto Lëndë në Orar' : null}
           onAction={handleOpenCreate}
         />
       ) : (
@@ -220,40 +223,45 @@ const Schedule = () => {
             const paletteClass = subjectColorPalettes[index % subjectColorPalettes.length];
 
             return (
-              <div
+              <motion.div
                 key={item.id}
-                className={`bg-white rounded-xl border border-slate-200 border-l-4 p-5 shadow hover:shadow-lg transition-all duration-200 flex flex-col justify-between ${paletteClass}`}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, delay: index * 0.05 }}
+                className={`bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 border-l-4 p-5 shadow-sm hover:shadow-lg transition-all duration-200 flex flex-col justify-between ${paletteClass}`}
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 border border-blue-100">
+                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-900">
                       Grupi: {item.group}
                     </span>
 
-                    <div className="flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold">
-                      <Clock className="w-3.5 h-3.5 text-blue-600" />
-                      <span>{item.startTime} - {item.endTime}</span>
+                    <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold">
+                      <Clock className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                      <span>
+                        {item.startTime} - {item.endTime}
+                      </span>
                     </div>
                   </div>
 
-                  <h3 className="text-sm font-bold text-slate-900 leading-snug">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">
                     {item.subject}
                   </h3>
-                  <p className="text-[11px] text-slate-500 mt-1">{item.faculty}</p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">{item.faculty}</p>
 
-                  <div className="mt-4 pt-3 border-t border-slate-100 space-y-2 text-xs text-slate-600">
+                  <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2 text-xs text-slate-600 dark:text-slate-400">
                     <div className="flex items-center space-x-2">
-                      <Building className="w-3.5 h-3.5 text-slate-400" />
+                      <DoorOpen className="w-4 h-4 text-slate-400" />
                       <span>
-                        Salla: <strong className="text-slate-800">{item.room}</strong>
+                        Salla: <strong className="text-slate-800 dark:text-slate-200">{item.room}</strong>
                       </span>
                     </div>
 
                     <div className="flex items-center space-x-2">
-                      <User className="w-3.5 h-3.5 text-slate-400" />
+                      <User className="w-4 h-4 text-slate-400" />
                       <span>
                         Pedagogu:{' '}
-                        <strong className="text-slate-800">
+                        <strong className="text-slate-800 dark:text-slate-200">
                           {item.professor?.firstName} {item.professor?.lastName}
                         </strong>
                       </span>
@@ -262,24 +270,24 @@ const Schedule = () => {
                 </div>
 
                 {(isAdmin || (isProfessor && item.professorId === user?.id)) && (
-                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-end space-x-1">
+                  <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end space-x-1">
                     <button
                       onClick={() => handleOpenEdit(item)}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-colors"
                       title="Edito orarin"
                     >
-                      <Edit2 className="w-3.5 h-3.5" />
+                      <Edit2 className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(item.id)}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors"
                       title="Fshi orarin"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 )}
-              </div>
+              </motion.div>
             );
           })}
         </div>
@@ -288,14 +296,14 @@ const Schedule = () => {
       {/* Modal Krijimi / Editimi i Orarit */}
       {showModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100">
-            <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
-              <h3 className="text-base font-bold text-slate-900">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 dark:border-slate-800">
+            <div className="flex items-center justify-between mb-4 border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">
                 {editingId ? 'Edito Orarin Mësimor' : 'Shto Orë të Re në Orar'}
               </h3>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -303,7 +311,7 @@ const Schedule = () => {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
                   Emri i Lëndës
                 </label>
                 <input
@@ -311,20 +319,20 @@ const Schedule = () => {
                   required
                   value={formData.subject}
                   onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                  placeholder="p.sh. Hartim dhe Menaxhim Projektesh"
-                  className="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="p.sh. Inxhinieri Softi"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
                     Dita e Javës
                   </label>
                   <select
                     value={formData.dayOfWeek}
                     onChange={(e) => setFormData({ ...formData, dayOfWeek: parseInt(e.target.value) })}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     {DAYS.map((d) => (
                       <option key={d.id} value={d.id}>
@@ -335,7 +343,51 @@ const Schedule = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+                    Grupi Studentor
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.group}
+                    onChange={(e) => setFormData({ ...formData, group: e.target.value })}
+                    placeholder="FTI-1"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+                    Ora Fillimit
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.startTime}
+                    onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
+                    placeholder="09:00"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+                    Ora Mbarimit
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.endTime}
+                    onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
+                    placeholder="11:00"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
                     Salla
                   </label>
                   <input
@@ -343,82 +395,26 @@ const Schedule = () => {
                     required
                     value={formData.room}
                     onChange={(e) => setFormData({ ...formData, room: e.target.value })}
-                    placeholder="p.sh. A101"
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="A101"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                    Ora e Fillimit
-                  </label>
-                  <input
-                    type="time"
-                    required
-                    value={formData.startTime}
-                    onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                    Ora e Mbarimit
-                  </label>
-                  <input
-                    type="time"
-                    required
-                    value={formData.endTime}
-                    onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                    Fakulteti
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.faculty}
-                    onChange={(e) => setFormData({ ...formData, faculty: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                    Grupi
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.group}
-                    onChange={(e) => setFormData({ ...formData, group: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-
-              <div className="flex justify-end space-x-2 pt-3 border-t border-slate-100">
+              <div className="flex justify-end space-x-2 pt-3 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-3 py-2 rounded-lg border border-slate-300 text-slate-700 text-xs font-medium hover:bg-slate-50"
+                  className="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
                   Anulo
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm disabled:opacity-50"
+                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm disabled:opacity-50"
                 >
-                  {submitting ? 'Duke ruajtur...' : editingId ? 'Ruaj Ndryshimet' : 'Shto Orarin'}
+                  {submitting ? 'Duke ruajtur...' : editingId ? 'Ruaj Ndryshimet' : 'Shto në Orar'}
                 </button>
               </div>
             </form>

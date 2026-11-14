@@ -6,14 +6,13 @@ import {
   LayoutDashboard,
   Bell,
   Calendar,
-  FileCheck2,
-  Building,
+  FileText,
+  DoorOpen,
   BookmarkCheck,
   Users,
   BarChart3,
   X,
-  GraduationCap,
-  Sparkles
+  GraduationCap
 } from 'lucide-react';
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -23,8 +22,8 @@ const Sidebar = ({ isOpen, onClose }) => {
     { name: 'Paneli Kryesor', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Njoftime', path: '/announcements', icon: Bell },
     { name: 'Orari Mësimor', path: '/schedule', icon: Calendar },
-    { name: 'Detyrat & Dorëzimet', path: '/assignments', icon: FileCheck2 },
-    { name: 'Sallat', path: '/rooms', icon: Building },
+    { name: 'Detyrat & Dorëzimet', path: '/assignments', icon: FileText },
+    { name: 'Sallat', path: '/rooms', icon: DoorOpen },
     { name: 'Rezervimet', path: '/bookings', icon: BookmarkCheck }
   ];
 
@@ -39,33 +38,33 @@ const Sidebar = ({ isOpen, onClose }) => {
       {isOpen && (
         <div
           onClick={onClose}
-          className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 lg:hidden transition-opacity"
+          className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-40 lg:hidden transition-opacity"
         />
       )}
 
-      {/* Sidebar container */}
+      {/* Sidebar container with Glassmorphism */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-40 w-64 bg-white border-r border-slate-200 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-40 w-64 bg-white/85 dark:bg-slate-900/85 backdrop-blur-md border-r border-slate-200/80 dark:border-slate-800/80 flex flex-col transition-all duration-300 ease-in-out lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Brand header */}
-        <div className="h-16 flex items-center justify-between px-6 border-b border-slate-100">
+        <div className="h-16 flex items-center justify-between px-6 border-b border-slate-200/70 dark:border-slate-800/70">
           <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-violet-600 flex items-center justify-center text-white shadow-sm shadow-blue-500/20">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-violet-600 flex items-center justify-center text-white shadow-sm shadow-blue-500/25">
               <GraduationCap className="w-5 h-5" />
             </div>
             <div>
-              <span className="font-bold text-slate-900 text-base tracking-tight">SmartCampus</span>
-              <p className="text-[10px] text-blue-600 font-semibold uppercase tracking-wider flex items-center space-x-1">
-                <span>Platformë Kursi</span>
+              <span className="font-extrabold text-slate-900 dark:text-white text-base tracking-tight">SmartCampus</span>
+              <p className="text-[10px] text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider">
+                Platformë Kursi
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
             aria-label="Mbyll menynë"
-            className="p-1 rounded-lg text-slate-400 hover:text-slate-600 lg:hidden"
+            className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 lg:hidden"
           >
             <X className="w-5 h-5" />
           </button>
@@ -74,10 +73,10 @@ const Sidebar = ({ isOpen, onClose }) => {
         {/* Navigation links */}
         <div className="flex-1 overflow-y-auto px-3 py-5 space-y-6">
           <div>
-            <p className="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+            <p className="px-3 text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">
               Kryesore
             </p>
-            <nav className="space-y-1">
+            <nav className="space-y-1.5">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -90,12 +89,12 @@ const Sidebar = ({ isOpen, onClose }) => {
                     className={({ isActive }) =>
                       `flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 ${
                         isActive
-                          ? 'bg-blue-50 text-blue-700 font-bold border-l-4 border-blue-600 shadow-sm'
-                          : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900'
+                          ? 'bg-blue-50/90 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold border-l-4 border-blue-600 shadow-sm'
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100'
                       }`
                     }
                   >
-                    <Icon className="w-4 h-4 flex-shrink-0" />
+                    <Icon className="w-5 h-5 flex-shrink-0" />
                     <span>{item.name}</span>
                   </NavLink>
                 );
@@ -106,10 +105,10 @@ const Sidebar = ({ isOpen, onClose }) => {
           {/* Admin Section */}
           {isAdmin && (
             <div>
-              <p className="px-3 text-[11px] font-bold text-purple-600 uppercase tracking-wider mb-2">
+              <p className="px-3 text-[11px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider mb-2">
                 Administrim
               </p>
-              <nav className="space-y-1">
+              <nav className="space-y-1.5">
                 {adminItems.map((item) => {
                   const Icon = item.icon;
                   return (
@@ -122,12 +121,12 @@ const Sidebar = ({ isOpen, onClose }) => {
                       className={({ isActive }) =>
                         `flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 ${
                           isActive
-                            ? 'bg-purple-50 text-purple-700 font-bold border-l-4 border-purple-600 shadow-sm'
-                            : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900'
+                            ? 'bg-purple-50/90 dark:bg-purple-950/40 text-purple-700 dark:text-purple-400 font-bold border-l-4 border-purple-600 shadow-sm'
+                            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100'
                         }`
                       }
                     >
-                      <Icon className="w-4 h-4 flex-shrink-0" />
+                      <Icon className="w-5 h-5 flex-shrink-0" />
                       <span>{item.name}</span>
                     </NavLink>
                   );
@@ -137,25 +136,25 @@ const Sidebar = ({ isOpen, onClose }) => {
           )}
         </div>
 
-        {/* User Card & Version in Footer (Kërkesa 8) */}
-        <div className="p-4 border-t border-slate-100 bg-slate-50/60">
+        {/* User Card & Version in Footer */}
+        <div className="p-4 border-t border-slate-200/70 dark:border-slate-800/70 bg-slate-50/60 dark:bg-slate-900/60">
           {user && (
             <div className="flex items-center space-x-3 mb-3">
               <Avatar user={user} size="sm" />
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-bold text-slate-800 truncate">
+                <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
                   {user.firstName} {user.lastName}
                 </p>
-                <p className="text-[10px] text-slate-500 truncate">
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
                   {user.faculty || 'Universiteti'} {user.group ? `(${user.group})` : ''}
                 </p>
               </div>
             </div>
           )}
 
-          <div className="flex items-center justify-between pt-2 border-t border-slate-200/60 text-[10px] text-slate-400">
+          <div className="flex items-center justify-between pt-2 border-t border-slate-200/60 dark:border-slate-800/60 text-[10px] text-slate-400 dark:text-slate-500">
             <span>SMARTCAMPUS v1.0.0</span>
-            <span className="flex items-center space-x-1 text-emerald-600 font-medium">
+            <span className="flex items-center space-x-1 text-emerald-600 dark:text-emerald-400 font-semibold">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
               <span>Online</span>
             </span>
